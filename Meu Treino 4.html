@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Meu Treino</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #000000;
+            color: #ff7300; /* Ajustado para o laranja da logo */
+        }
+        .container {
+            width: 90%;
+            max-width: 600px;
+            margin: auto;
+            background: #222;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(255, 94, 0, 0.582); /* Ajustado o tom */
+        }
+        .cabecalho {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+        .cabecalho img {
+            height: 150px;
+            margin-right: 20px;
+        }
+        .input-field {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #ff7300; /* Ajustado o tom */
+            border-radius: 8px;
+            background: #333;
+            color: #ff7300; /* Ajustado o tom */
+            box-sizing: border-box;
+            font-weight: bold;
+        }
+        .input-group {
+            display: flex;
+            gap: 10px;
+            justify-content: space-between;
+        }
+        .input-group .input-field {
+            flex: 1;
+        }
+        .day-button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            background: #444;
+            color: #ff7300; /* Ajustado o tom */
+            border: 2px solid #ff7300; /* Ajustado o tom */
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .exercise-container {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #111;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 15px rgba(255, 123, 0, 0.7); /* Ajustado o tom */
+            width: 80%;
+            max-width: 400px;
+        }
+        .exercise-list {
+            list-style: none;
+            padding: 0;
+        }
+        .exercise-list li {
+            background: #666;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 5px;
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            font-weight: bold;
+        }
+        .add-btn, .return-btn {
+            background: #ff7300; /* Ajustado o tom */
+            color: #000;
+            border: 2px solid #ff7300; /* Ajustado o tom */
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 100%;
+        }
+        .remove-btn {
+            background: red;
+            color: white;
+            border: none;
+            padding: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="cabecalho">
+            <img src="C:\Users\junin\OneDrive\Imagens\logo.png" alt="Logo Panobianco Academia">
+            <h1><b>Meu Treino</b></h1>
+        </div>
+        <input type="text" id="nome" class="input-field" placeholder="Nome do Aluno">
+        <div class="input-group">
+            <input type="number" id="peso" class="input-field" placeholder="Peso Atual (kg)">
+            <input type="number" id="altura" class="input-field" placeholder="Altura (m)">
+        </div>
+        <div id="days-container"></div>
+    </div>
+    
+    <div id="exercise-modal" class="exercise-container" style="display: none;">
+        <h2 id="modal-title"></h2>
+        <ul class="exercise-list" id="exercise-list"></ul>
+        <input type="text" id="exercise-input" class="input-field" placeholder="Novo exercício">
+        <button class="add-btn" onclick="addExercise()">Adicionar</button>
+        <button class="return-btn" onclick="closeModal()">Retornar</button>
+    </div>
+    
+    <script>
+        const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
+        const daysContainer = document.getElementById('days-container');
+        let currentDay = '';
+        let exercises = JSON.parse(localStorage.getItem('exercises')) || {};
+        
+        days.forEach(day => {
+            const dayDiv = document.createElement('div');
+            dayDiv.innerHTML = `<button class="day-button" onclick="openModal('${day}')">${day} +</button>`;
+            daysContainer.appendChild(dayDiv);
+        });
+        
+        function openModal(day) {
+            currentDay = day;
+            document.getElementById('modal-title').innerText = `Exercícios de ${day}`;
+            document.getElementById('exercise-modal').style.display = 'block';
+            loadExercises();
+        }
+        
+        function closeModal() {
+            document.getElementById('exercise-modal').style.display = 'none';
+        }
+        
+        function addExercise() {
+            const input = document.getElementById('exercise-input');
+            if (input.value.trim() !== '') {
+                if (!exercises[currentDay]) {
+                    exercises[currentDay] = [];
+                }
+                exercises[currentDay].push(input.value);
+                localStorage.setItem('exercises', JSON.stringify(exercises));
+                input.value = '';
+                loadExercises();
+            }
+        }
+        
+        function loadExercises() {
+            const list = document.getElementById('exercise-list');
+            list.innerHTML = '';
+            if (exercises[currentDay]) {
+                exercises[currentDay].forEach((exercise, index) => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `${exercise} <button class="remove-btn" onclick="removeExercise(${index})">X</button>`;
+                    list.appendChild(li);
+                });
+            }
+        }
+        
+        function removeExercise(index) {
+            if (confirm("Deseja realmente remover este exercício?")) {
+                exercises[currentDay].splice(index, 1);
+                localStorage.setItem('exercises', JSON.stringify(exercises));
+                loadExercises();
+            }
+        }
+    </script>
+</body>
+</html>
