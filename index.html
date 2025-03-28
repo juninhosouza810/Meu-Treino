@@ -9,7 +9,7 @@
             font-family: Arial, sans-serif;
             text-align: center;
             background-color: #000000;
-            color: #ff7300; /* Ajustado para o laranja da logo */
+            color: #ff7300;
         }
         .container {
             width: 90%;
@@ -18,7 +18,7 @@
             background: #222;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(255, 94, 0, 0.582); /* Ajustado o tom */
+            box-shadow: 0px 0px 10px rgba(255, 94, 0, 0.582);
         }
         .cabecalho {
             display: flex;
@@ -27,39 +27,46 @@
             margin-bottom: 20px;
         }
         .cabecalho img {
-            height: 150px;
+            height: 200px;  /* Aumentei o tamanho da logo */
             margin-right: 20px;
         }
         .input-field {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
-            border: 2px solid #ff7300; /* Ajustado o tom */
+            border: 2px solid #ff7300;
             border-radius: 8px;
             background: #333;
-            color: #ff7300; /* Ajustado o tom */
+            color: #ff7300;
             box-sizing: border-box;
             font-weight: bold;
-        }
-        .input-group {
             display: flex;
-            gap: 10px;
             justify-content: space-between;
+            align-items: center;
         }
-        .input-group .input-field {
-            flex: 1;
+        .input-field input {
+            background: transparent;
+            border: none;
+            outline: none;
+            color: #ff7300;
+            flex-grow: 1;
+        }
+        .input-field .trash-icon {
+            cursor: pointer;
+            color: red;
+            margin-left: 10px;
         }
         .day-button {
             width: 100%;
             padding: 10px;
             margin: 5px 0;
             background: #444;
-            color: white; /* Alterado para branco */
-            border: 2px solid #ff7300; /* Mantendo a borda */
+            color: white;
+            border: 2px solid #ff7300;
             border-radius: 8px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 1.2rem; /* Aumentei um pouco o tamanho da fonte */
+            font-size: 1.2rem;
         }
         .exercise-container {
             display: none;
@@ -70,7 +77,7 @@
             background: #111;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(255, 123, 0, 0.7); /* Ajustado o tom */
+            box-shadow: 0px 0px 15px rgba(255, 123, 0, 0.7);
             width: 80%;
             max-width: 400px;
         }
@@ -89,9 +96,9 @@
             font-weight: bold;
         }
         .add-btn, .return-btn {
-            background: #ff7300; /* Ajustado o tom */
+            background: #ff7300;
             color: #000;
-            border: 2px solid #ff7300; /* Ajustado o tom */
+            border: 2px solid #ff7300;
             padding: 10px;
             margin-top: 10px;
             cursor: pointer;
@@ -107,20 +114,30 @@
             cursor: pointer;
             border-radius: 5px;
         }
+        .pdf-btn {
+            background: #ff7300;
+            color: #000;
+            border: 2px solid #ff7300;
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 100%;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="cabecalho">
-            <img src="https://github.com/user-attachments/assets/1346e26c-6a97-4b5a-bae9-f00621c3178e" alt="Logo Panobianco Academia">
-            <h1><b>Meu Treino</b></h1>
+            <img src="https://github.com/user-attachments/assets/9d9a990a-677c-4793-b1d2-f3acc7f83b73" alt="Logo Novo">
         </div>
-        <input type="text" id="nome" class="input-field" placeholder="Nome do Aluno">
-        <div class="input-group">
-            <input type="number" id="peso" class="input-field" placeholder="Peso Atual (kg)">
-            <input type="number" id="altura" class="input-field" placeholder="Altura (m)">
+        <div class="input-field">
+            <input type="text" id="nome" placeholder="Nome do Aluno">
+            <span class="trash-icon" onclick="apagarNome()">🗑️</span>
         </div>
         <div id="days-container"></div>
+        <button class="pdf-btn" onclick="gerarPdf()">Gerar PDF</button>
     </div>
     
     <div id="exercise-modal" class="exercise-container" style="display: none;">
@@ -130,13 +147,40 @@
         <button class="add-btn" onclick="addExercise()">Adicionar</button>
         <button class="return-btn" onclick="closeModal()">Retornar</button>
     </div>
-    
+
+    <!-- Adicionando jsPDF via CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+
     <script>
         const days = ['Segunda', 'Terça', 'Quarta', 'Quinta', 'Sexta', 'Sábado', 'Domingo'];
         const daysContainer = document.getElementById('days-container');
         let currentDay = '';
         let exercises = JSON.parse(localStorage.getItem('exercises')) || {};
         
+        // Carrega o nome do aluno salvo no localStorage, se existir
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedName = localStorage.getItem('nomeAluno');
+            if (savedName) {
+                document.getElementById('nome').value = savedName;
+            }
+        });
+
+        // Função para apagar o nome
+        function apagarNome() {
+            if (confirm("Deseja realmente apagar o nome do aluno?")) {
+                localStorage.removeItem('nomeAluno');
+                document.getElementById('nome').value = '';
+            }
+        }
+
+        // Salva o nome no localStorage sempre que for alterado
+        document.getElementById('nome').addEventListener('input', function() {
+            const nome = this.value.trim();
+            if (nome) {
+                localStorage.setItem('nomeAluno', nome);
+            }
+        });
+
         days.forEach(day => {
             const dayDiv = document.createElement('div');
             dayDiv.innerHTML = `<button class="day-button" onclick="openModal('${day}')">${day} +</button>`;
@@ -185,6 +229,39 @@
                 localStorage.setItem('exercises', JSON.stringify(exercises));
                 loadExercises();
             }
+        }
+
+        // Função para gerar o PDF usando jsPDF
+        function gerarPdf() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF();
+
+            let yPosition = 20;
+            doc.setFontSize(16);
+            doc.text('Treino do Aluno', 105, yPosition, { align: 'center' });
+
+            const nome = document.getElementById('nome').value.trim();
+            if (nome) {
+                yPosition += 10;
+                doc.setFontSize(12);
+                doc.text(`Nome: ${nome}`, 20, yPosition);
+            }
+
+            for (const [day, exercisesList] of Object.entries(exercises)) {
+                if (exercisesList.length > 0) {
+                    yPosition += 10;
+                    doc.setFontSize(14);
+                    doc.text(`${day}:`, 20, yPosition);
+
+                    exercisesList.forEach(exercise => {
+                        yPosition += 8;
+                        doc.setFontSize(12);
+                        doc.text(`- ${exercise}`, 30, yPosition);
+                    });
+                }
+            }
+
+            doc.save('treino.pdf');
         }
     </script>
 </body>
