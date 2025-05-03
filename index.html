@@ -1,269 +1,306 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Treino</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            background-color: #000000;
-            color: #ff7300;
-        }
-        .container {
-            width: 90%;
-            max-width: 600px;
-            margin: auto;
-            background: #222;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 10px rgba(255, 94, 0, 0.582);
-        }
-        .cabecalho {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 20px;
-        }
-        .cabecalho img {
-            height: 200px;  /* Aumentei o tamanho da logo */
-            margin-right: 20px;
-        }
-        .input-field {
-            width: 100%;
-            padding: 10px;
-            margin-bottom: 10px;
-            border: 2px solid #ff7300;
-            border-radius: 8px;
-            background: #333;
-            color: #ff7300;
-            box-sizing: border-box;
-            font-weight: bold;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .input-field input {
-            background: transparent;
-            border: none;
-            outline: none;
-            color: #ff7300;
-            flex-grow: 1;
-        }
-        .input-field .trash-icon {
-            cursor: pointer;
-            color: red;
-            margin-left: 10px;
-        }
-        .day-button {
-            width: 100%;
-            padding: 10px;
-            margin: 5px 0;
-            background: #444;
-            color: white;
-            border: 2px solid #ff7300;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 1.2rem;
-        }
-        .exercise-container {
-            display: none;
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: #111;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 0px 15px rgba(255, 123, 0, 0.7);
-            width: 80%;
-            max-width: 400px;
-        }
-        .exercise-list {
-            list-style: none;
-            padding: 0;
-        }
-        .exercise-list li {
-            background: #666;
-            padding: 10px;
-            margin: 5px 0;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            color: white;
-            font-weight: bold;
-        }
-        .add-btn, .return-btn {
-            background: #ff7300;
-            color: #000;
-            border: 2px solid #ff7300;
-            padding: 10px;
-            margin-top: 10px;
-            cursor: pointer;
-            border-radius: 8px;
-            font-weight: bold;
-            width: 100%;
-        }
-        .remove-btn {
-            background: red;
-            color: white;
-            border: none;
-            padding: 5px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .pdf-btn {
-            background: #ff7300;
-            color: #000;
-            border: 2px solid #ff7300;
-            padding: 10px;
-            margin-top: 10px;
-            cursor: pointer;
-            border-radius: 8px;
-            font-weight: bold;
-            width: 100%;
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Meu Treino</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 480px;
+      margin: 30px auto;
+      padding: 25px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+    }
+
+    .cabecalho img {
+      display: block;
+      height: 110px;
+      margin: 0 auto 20px;
+    }
+
+    h3 {
+      color: #fcb045;
+      margin-bottom: 8px;
+    }
+
+    iframe {
+      width: 100%;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .input-field {
+      display: flex;
+      align-items: center;
+      background: #333;
+      padding: 10px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
+
+    .input-field input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: #fff;
+      font-size: 1rem;
+      outline: none;
+    }
+
+    .trash-icon {
+      margin-left: 10px;
+      color: #f44336;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
+
+    .day-button {
+      width: 100%;
+      background: linear-gradient(90deg, #f7971e, #ffd200);
+      border: none;
+      padding: 12px;
+      margin: 8px 0;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      color: #000;
+      cursor: pointer;
+      transition: transform 0.2s;
+    }
+
+    .day-button:hover {
+      transform: scale(1.02);
+    }
+
+    .pdf-btn {
+      background: linear-gradient(90deg, #00c6ff, #0072ff);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      width: 100%;
+      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    .exercise-container {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #222;
+      padding: 25px;
+      border-radius: 15px;
+      width: 90%;
+      max-width: 400px;
+      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7);
+      z-index: 999;
+    }
+
+    .exercise-list {
+      list-style: none;
+      padding: 0;
+      margin: 15px 0;
+      color: #fff;
+    }
+
+    .exercise-list li {
+      background: #444;
+      padding: 10px;
+      border-radius: 6px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .remove-btn {
+      background: #f44336;
+      border: none;
+      color: white;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+
+    .add-btn, .return-btn {
+      width: 100%;
+      margin-top: 10px;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .add-btn {
+      background: linear-gradient(90deg, #00b09b, #96c93d);
+      color: white;
+    }
+
+    .return-btn {
+      background: #777;
+      color: white;
+    }
+  </style>
 </head>
 <body>
-    <div class="container">
-        <div class="cabecalho">
-            <img src="https://github.com/user-attachments/assets/9d9a990a-677c-4793-b1d2-f3acc7f83b73" alt="Logo Novo">
-        </div>
-        <div class="input-field">
-            <input type="text" id="nome" placeholder="Nome do Aluno">
-            <span class="trash-icon" onclick="apagarNome()">🗑️</span>
-        </div>
-        <div id="days-container"></div>
-        <button class="pdf-btn" onclick="gerarPdf()">Gerar PDF</button>
-    </div>
-    
-    <div id="exercise-modal" class="exercise-container" style="display: none;">
-        <h2 id="modal-title"></h2>
-        <ul class="exercise-list" id="exercise-list"></ul>
-        <input type="text" id="exercise-input" class="input-field" placeholder="Novo exercício">
-        <button class="add-btn" onclick="addExercise()">Adicionar</button>
-        <button class="return-btn" onclick="closeModal()">Retornar</button>
+  <div class="container">
+    <div class="cabecalho">
+      <img src="https://github.com/user-attachments/assets/9d9a990a-677c-4793-b1d2-f3acc7f83b73" alt="Logo Novo">
     </div>
 
-    <!-- Adicionando jsPDF via CDN -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+    <div class="spotify-section">
+      <h3>Playlist no Spotify</h3>
+      <iframe 
+        src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator" 
+        frameborder="0"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy">
+      </iframe>
+    </div>
 
-    <script>
-        const days = ['Treino A', 'Treino B', 'Treino C', 'Treino D', 'Cárdio'];
-        const daysContainer = document.getElementById('days-container');
-        let currentDay = '';
-        let exercises = JSON.parse(localStorage.getItem('exercises')) || {};
-        
-        // Carrega o nome do aluno salvo no localStorage, se existir
-        document.addEventListener('DOMContentLoaded', function() {
-            const savedName = localStorage.getItem('nomeAluno');
-            if (savedName) {
-                document.getElementById('nome').value = savedName;
-            }
+    <div class="input-field">
+      <input type="text" id="nome" placeholder="Nome do Aluno">
+      <span class="trash-icon" onclick="apagarNome()">🗑️</span>
+    </div>
+
+    <div id="days-container"></div>
+    <button class="pdf-btn" onclick="gerarPdf()">Gerar PDF</button>
+  </div>
+
+  <div id="exercise-modal" class="exercise-container">
+    <h2 id="modal-title"></h2>
+    <ul class="exercise-list" id="exercise-list"></ul>
+    <input type="text" id="exercise-input" class="input-field" placeholder="Novo exercício">
+    <button class="add-btn" onclick="addExercise()">Adicionar</button>
+    <button class="return-btn" onclick="closeModal()">Retornar</button>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script>
+    const days = ['Treino A', 'Treino B', 'Treino C', 'Treino D', 'Cárdio'];
+    const daysContainer = document.getElementById('days-container');
+    let currentDay = '';
+    let exercises = JSON.parse(localStorage.getItem('exercises')) || {};
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const savedName = localStorage.getItem('nomeAluno');
+      if (savedName) document.getElementById('nome').value = savedName;
+
+      days.forEach(day => {
+        const button = document.createElement('button');
+        button.className = 'day-button';
+        button.textContent = `${day} +`;
+        button.onclick = () => openModal(day);
+        daysContainer.appendChild(button);
+      });
+    });
+
+    function apagarNome() {
+      if (confirm("Deseja realmente apagar o nome do aluno?")) {
+        localStorage.removeItem('nomeAluno');
+        document.getElementById('nome').value = '';
+      }
+    }
+
+    document.getElementById('nome').addEventListener('input', function () {
+      const nome = this.value.trim();
+      if (nome) {
+        localStorage.setItem('nomeAluno', nome);
+      }
+    });
+
+    function openModal(day) {
+      currentDay = day;
+      document.getElementById('modal-title').innerText = `Exercícios de ${day}`;
+      document.getElementById('exercise-modal').style.display = 'block';
+      loadExercises();
+    }
+
+    function closeModal() {
+      document.getElementById('exercise-modal').style.display = 'none';
+    }
+
+    function addExercise() {
+      const input = document.getElementById('exercise-input');
+      const value = input.value.trim();
+      if (value !== '') {
+        if (!exercises[currentDay]) exercises[currentDay] = [];
+        exercises[currentDay].push(value);
+        localStorage.setItem('exercises', JSON.stringify(exercises));
+        input.value = '';
+        loadExercises();
+      }
+    }
+
+    function loadExercises() {
+      const list = document.getElementById('exercise-list');
+      list.innerHTML = '';
+      if (exercises[currentDay]) {
+        exercises[currentDay].forEach((exercise, index) => {
+          const li = document.createElement('li');
+          li.innerHTML = `${exercise} <button class="remove-btn" onclick="removeExercise(${index})">X</button>`;
+          list.appendChild(li);
         });
+      }
+    }
 
-        // Função para apagar o nome
-        function apagarNome() {
-            if (confirm("Deseja realmente apagar o nome do aluno?")) {
-                localStorage.removeItem('nomeAluno');
-                document.getElementById('nome').value = '';
-            }
+    function removeExercise(index) {
+      if (confirm("Deseja realmente remover este exercício?")) {
+        exercises[currentDay].splice(index, 1);
+        localStorage.setItem('exercises', JSON.stringify(exercises));
+        loadExercises();
+      }
+    }
+
+    function gerarPdf() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF();
+
+      let yPosition = 20;
+      doc.setFontSize(16);
+      doc.text('Treino do Aluno', 105, yPosition, { align: 'center' });
+
+      const nome = document.getElementById('nome').value.trim();
+      if (nome) {
+        yPosition += 10;
+        doc.setFontSize(12);
+        doc.text(`Nome: ${nome}`, 20, yPosition);
+      }
+
+      for (const [day, exercisesList] of Object.entries(exercises)) {
+        if (exercisesList.length > 0) {
+          yPosition += 10;
+          doc.setFontSize(14);
+          doc.text(`${day}:`, 20, yPosition);
+
+          exercisesList.forEach(exercise => {
+            yPosition += 8;
+            doc.setFontSize(12);
+            doc.text(`- ${exercise}`, 30, yPosition);
+          });
         }
+      }
 
-        // Salva o nome no localStorage sempre que for alterado
-        document.getElementById('nome').addEventListener('input', function() {
-            const nome = this.value.trim();
-            if (nome) {
-                localStorage.setItem('nomeAluno', nome);
-            }
-        });
-
-        days.forEach(day => {
-            const dayDiv = document.createElement('div');
-            dayDiv.innerHTML = `<button class="day-button" onclick="openModal('${day}')">${day} +</button>`;
-            daysContainer.appendChild(dayDiv);
-        });
-        
-        function openModal(day) {
-            currentDay = day;
-            document.getElementById('modal-title').innerText = `Exercícios de ${day}`;
-            document.getElementById('exercise-modal').style.display = 'block';
-            loadExercises();
-        }
-        
-        function closeModal() {
-            document.getElementById('exercise-modal').style.display = 'none';
-        }
-        
-        function addExercise() {
-            const input = document.getElementById('exercise-input');
-            if (input.value.trim() !== '') {
-                if (!exercises[currentDay]) {
-                    exercises[currentDay] = [];
-                }
-                exercises[currentDay].push(input.value);
-                localStorage.setItem('exercises', JSON.stringify(exercises));
-                input.value = '';
-                loadExercises();
-            }
-        }
-        
-        function loadExercises() {
-            const list = document.getElementById('exercise-list');
-            list.innerHTML = '';
-            if (exercises[currentDay]) {
-                exercises[currentDay].forEach((exercise, index) => {
-                    const li = document.createElement('li');
-                    li.innerHTML = `${exercise} <button class="remove-btn" onclick="removeExercise(${index})">X</button>`;
-                    list.appendChild(li);
-                });
-            }
-        }
-        
-        function removeExercise(index) {
-            if (confirm("Deseja realmente remover este exercício?")) {
-                exercises[currentDay].splice(index, 1);
-                localStorage.setItem('exercises', JSON.stringify(exercises));
-                loadExercises();
-            }
-        }
-
-        // Função para gerar o PDF usando jsPDF
-        function gerarPdf() {
-            const { jsPDF } = window.jspdf;
-            const doc = new jsPDF();
-
-            let yPosition = 20;
-            doc.setFontSize(16);
-            doc.text('Treino do Aluno', 105, yPosition, { align: 'center' });
-
-            const nome = document.getElementById('nome').value.trim();
-            if (nome) {
-                yPosition += 10;
-                doc.setFontSize(12);
-                doc.text(`Nome: ${nome}`, 20, yPosition);
-            }
-
-            for (const [day, exercisesList] of Object.entries(exercises)) {
-                if (exercisesList.length > 0) {
-                    yPosition += 10;
-                    doc.setFontSize(14);
-                    doc.text(`${day}:`, 20, yPosition);
-
-                    exercisesList.forEach(exercise => {
-                        yPosition += 8;
-                        doc.setFontSize(12);
-                        doc.text(`- ${exercise}`, 30, yPosition);
-                    });
-                }
-            }
-
-            doc.save('treino.pdf');
-        }
-    </script>
+      doc.save('treino.pdf');
+    }
+  </script>
 </body>
 </html>
-
