@@ -216,7 +216,6 @@
     </div>
 
     <div id="days-container"></div>
-
     <button class="pdf-btn" onclick="gerarPdf()">Gerar PDF</button>
 
     <div id="monitor-corrida">
@@ -271,6 +270,80 @@
       document.getElementById('modal-title').innerText = `Exercícios de ${day}`;
       document.getElementById('exercise-modal').style.display = 'block';
       loadExercises();
+    }
+
+    // Monitoramento de Corrida com GPS
+    let watchId;
+    let startTime;
+    let totalDistance = 0;
+    let lastCoords = null;
+
+    function iniciarCorrida() {
+      if (!navigator.geolocation) {
+        alert("Geolocalização não suportada.");
+        return;
+      }
+
+      startTime = Date.now();
+      totalDistance = 0;
+      lastCoords = null;
+
+      document.getElementById('tempo').textContent = '0s';
+      document.getElementById('distancia').textContent = '0.00 km';
+      document.getElementById('velocidade').textContent = '0.00 km/h';
+      document.getElementById('pace').textContent = '0.00 min/km';
+
+      watchId = navigator.geolocation.watchPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          const currentTime = Date.now();
+          const elapsedTime = (currentTime - startTime) / 1000;
+
+          if (lastCoords) {
+            const distance = calcularDistancia(lastCoords.latitude, lastCoords.longitude, latitude, longitude);
+            totalDistance += distance;
+          }
+
+          lastCoords = { latitude, longitude };
+
+          const tempoMin = elapsedTime / 60;
+          const velocidade = totalDistance / (elapsedTime / 3600);
+          const pace = tempoMin / totalDistance;
+
+          document.getElementById('tempo').textContent = `${Math.floor(elapsedTime)}s`;
+          document.getElementById('distancia').textContent = `${totalDistance.toFixed(2)} km`;
+          document.getElementById('velocidade').textContent = `${velocidade.toFixed(2)} km/h`;
+          document.getElementById('pace').textContent = isFinite(pace) ? `${pace.toFixed(2)} min/km` : '0.00 min/km';
+        },
+        (error) => {
+          console.error("Erro:", error);
+          alert("Erro na localização. Verifique as permissões.");
+        },
+        {
+          enableHighAccuracy: true,
+          maximumAge: 1000,
+          timeout: 5000
+        }
+      );
+    }
+
+    function pararCorrida() {
+      if (watchId) {
+        navigator.geolocation.clearWatch(watchId);
+        watchId = null;
+      }
+    }
+
+    function calcularDistancia(lat1, lon1, lat2, lon2) {
+      const R = 6371;
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      const a =
+        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
     }
   </script>
 </body>
