@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Meu Treino</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
   <style>
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -124,6 +125,7 @@
 
     #monitor-corrida button {
       margin-right: 10px;
+      margin-top: 10px;
       padding: 10px 15px;
       border: none;
       border-radius: 8px;
@@ -131,6 +133,13 @@
       font-weight: bold;
       color: #000;
       cursor: pointer;
+    }
+
+    #mapa {
+      margin-top: 15px;
+      height: 300px;
+      display: none;
+      border-radius: 12px;
     }
 
     .exercise-container {
@@ -226,6 +235,9 @@
       <p><strong>Pace:</strong> <span id="pace">0.00 min/km</span></p>
       <button onclick="iniciarCorrida()">Iniciar</button>
       <button onclick="pararCorrida()">Parar</button>
+      <button onclick="zerarCorrida()">Zerar</button>
+      <button onclick="percorrerTrajeto()">Ver Percurso</button>
+      <div id="mapa"></div>
     </div>
   </div>
 
@@ -237,12 +249,19 @@
     <button class="return-btn" onclick="closeModal()">Retornar</button>
   </div>
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
   <script>
     const days = ['Treino A', 'Treino B', 'Treino C', 'Treino D', 'Running'];
     const daysContainer = document.getElementById('days-container');
     let currentDay = '';
     let exercises = JSON.parse(localStorage.getItem('exercises')) || {};
+
+    let watchId;
+    let startTime;
+    let totalDistance = 0;
+    let lastCoords = null;
+    let coordenadasPercurso = [];
+    let mapa, polyline;
 
     document.addEventListener('DOMContentLoaded', () => {
       const savedName = localStorage.getItem('nomeAluno');
@@ -272,12 +291,6 @@
       loadExercises();
     }
 
-    // Monitoramento de Corrida com GPS
-    let watchId;
-    let startTime;
-    let totalDistance = 0;
-    let lastCoords = null;
-
     function iniciarCorrida() {
       if (!navigator.geolocation) {
         alert("Geolocalização não suportada.");
@@ -287,6 +300,7 @@
       startTime = Date.now();
       totalDistance = 0;
       lastCoords = null;
+      coordenadasPercurso = [];
 
       document.getElementById('tempo').textContent = '0s';
       document.getElementById('distancia').textContent = '0.00 km';
@@ -305,6 +319,7 @@
           }
 
           lastCoords = { latitude, longitude };
+          coordenadasPercurso.push([latitude, longitude]);
 
           const tempoMin = elapsedTime / 60;
           const velocidade = totalDistance / (elapsedTime / 3600);
@@ -332,6 +347,46 @@
         navigator.geolocation.clearWatch(watchId);
         watchId = null;
       }
+    }
+
+    function zerarCorrida() {
+      pararCorrida();
+      totalDistance = 0;
+      lastCoords = null;
+      coordenadasPercurso = [];
+
+      document.getElementById('tempo').textContent = '0s';
+      document.getElementById('distancia').textContent = '0.00 km';
+      document.getElementById('velocidade').textContent = '0.00 km/h';
+      document.getElementById('pace').textContent = '0.00 min/km';
+
+      document.getElementById('mapa').style.display = 'none';
+      if (mapa) {
+        mapa.remove();
+        mapa = null;
+      }
+    }
+
+    function percorrerTrajeto() {
+      if (coordenadasPercurso.length === 0) {
+        alert("Nenhum trajeto registrado.");
+        return;
+      }
+
+      document.getElementById('mapa').style.display = 'block';
+
+      if (mapa) {
+        mapa.remove();
+      }
+
+      mapa = L.map('mapa').setView(coordenadasPercurso[0], 16);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; OpenStreetMap'
+      }).addTo(mapa);
+
+      polyline = L.polyline(coordenadasPercurso, { color: 'orange' }).addTo(mapa);
+      mapa.fitBounds(polyline.getBounds());
     }
 
     function calcularDistancia(lat1, lon1, lat2, lon2) {
