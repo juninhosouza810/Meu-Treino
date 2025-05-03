@@ -4,11 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Meu Treino</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
+    /* Estilo moderno com azul escuro, pink e verde */
     body {
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      background: linear-gradient(135deg, #0a0f2c, #2a0f4d, #0f3d3e);
       color: #fff;
       margin: 0;
       padding: 0;
@@ -23,9 +24,9 @@
       max-width: 480px;
       margin: 30px auto;
       padding: 25px;
-      background: rgba(0, 0, 0, 0.85);
-      border-radius: 15px;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      background: rgba(10, 10, 30, 0.95);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 255, 150, 0.2);
       display: flex;
       flex-direction: column;
       gap: 20px;
@@ -33,33 +34,36 @@
 
     .cabecalho img {
       display: block;
-      height: 100px;
-      margin: 0 auto;
+      height: 90px;
+      margin: 0 auto 10px;
     }
 
     h3 {
-      color: #fcb045;
+      color: #ff69b4;
       margin: 0;
+      font-size: 1.3rem;
     }
 
     iframe {
       width: 100%;
-      border-radius: 10px;
-      min-height: 80px;
+      border-radius: 12px;
+      min-height: 60px;
+      border: none;
     }
 
     .spotify-section {
       display: flex;
       flex-direction: column;
-      gap: 10px;
+      gap: 5px;
     }
 
     .input-field {
       display: flex;
       align-items: center;
-      background: #333;
-      padding: 12px;
-      border-radius: 10px;
+      background: rgba(40, 40, 80, 0.8);
+      padding: 10px;
+      border-radius: 12px;
+      border: 1px solid #444;
       gap: 10px;
     }
 
@@ -73,9 +77,9 @@
     }
 
     .trash-icon {
-      color: #f44336;
+      color: #ff4d4d;
       cursor: pointer;
-      font-size: 1.3rem;
+      font-size: 1.5rem;
     }
 
     #days-container {
@@ -86,60 +90,25 @@
 
     .day-button {
       width: 100%;
-      background: linear-gradient(90deg, #f7971e, #ffd200);
+      background: linear-gradient(90deg, #ff69b4, #00ffb3);
       border: none;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 14px;
+      border-radius: 12px;
       font-weight: bold;
       font-size: 1.1rem;
       color: #000;
       cursor: pointer;
-      transition: transform 0.2s;
-    }
-
-    .day-button:hover {
-      transform: scale(1.02);
     }
 
     .pdf-btn {
-      background: linear-gradient(90deg, #00c6ff, #0072ff);
-      color: #fff;
+      background: linear-gradient(90deg, #00ffb3, #ff69b4);
+      color: #000;
       border: none;
-      padding: 12px;
-      border-radius: 10px;
+      padding: 14px;
+      border-radius: 12px;
       font-weight: bold;
       width: 100%;
       cursor: pointer;
-    }
-
-    #monitor-corrida {
-      display: none;
-      background: #333;
-      padding: 20px;
-      border-radius: 12px;
-    }
-
-    #monitor-corrida p {
-      margin: 8px 0;
-    }
-
-    #monitor-corrida button {
-      margin-right: 10px;
-      margin-top: 10px;
-      padding: 10px 15px;
-      border: none;
-      border-radius: 8px;
-      background: #fcb045;
-      font-weight: bold;
-      color: #000;
-      cursor: pointer;
-    }
-
-    #mapa {
-      margin-top: 15px;
-      height: 300px;
-      display: none;
-      border-radius: 12px;
     }
 
     .exercise-container {
@@ -148,12 +117,12 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: #222;
-      padding: 25px;
-      border-radius: 15px;
+      background: rgba(20, 20, 40, 0.95);
+      padding: 30px;
+      border-radius: 20px;
       width: 90%;
       max-width: 400px;
-      box-shadow: 0 5px 20px rgba(0, 0, 0, 0.7);
+      box-shadow: 0 8px 25px rgba(255, 105, 180, 0.3);
       z-index: 999;
     }
 
@@ -165,27 +134,29 @@
     }
 
     .exercise-list li {
-      background: #444;
-      padding: 10px;
-      border-radius: 6px;
-      margin-bottom: 8px;
+      background: #353c60;
+      padding: 10px 14px;
+      border-radius: 8px;
+      margin-bottom: 10px;
       display: flex;
-      justify-content: space-between;
+      flex-direction: column;
     }
 
     .remove-btn {
-      background: #f44336;
+      background: #ff4b5c;
       border: none;
       color: white;
-      padding: 6px 10px;
+      padding: 6px 12px;
       border-radius: 6px;
       cursor: pointer;
+      align-self: flex-end;
+      margin-top: 5px;
     }
 
     .add-btn, .return-btn {
       width: 100%;
-      margin-top: 10px;
-      padding: 10px;
+      margin-top: 12px;
+      padding: 12px;
       border: none;
       border-radius: 10px;
       font-weight: bold;
@@ -193,213 +164,156 @@
     }
 
     .add-btn {
-      background: linear-gradient(90deg, #00b09b, #96c93d);
-      color: white;
+      background: linear-gradient(90deg, #00ffb3, #39ff14);
+      color: #000;
     }
 
     .return-btn {
-      background: #777;
+      background: linear-gradient(90deg, #ff69b4, #8a2be2);
       color: white;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div class="cabecalho">
-      <img src="https://github.com/user-attachments/assets/9d9a990a-677c-4793-b1d2-f3acc7f83b73" alt="Logo Novo">
-    </div>
 
-    <div class="spotify-section">
-      <h3>Playlist no Spotify</h3>
-      <iframe 
-        src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator" 
-        frameborder="0"
-        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-        loading="lazy">
-      </iframe>
-    </div>
-
-    <div class="input-field">
-      <input type="text" id="nome" placeholder="Nome do Aluno">
-      <span class="trash-icon" onclick="apagarNome()">🗑️</span>
-    </div>
-
-    <div id="days-container"></div>
-    <button class="pdf-btn" onclick="gerarPdf()">Gerar PDF</button>
-
-    <div id="monitor-corrida">
-      <h3>Monitoramento de Corrida</h3>
-      <p><strong>Tempo:</strong> <span id="tempo">0s</span></p>
-      <p><strong>Distância:</strong> <span id="distancia">0.00 km</span></p>
-      <p><strong>Velocidade:</strong> <span id="velocidade">0.00 km/h</span></p>
-      <p><strong>Pace:</strong> <span id="pace">0.00 min/km</span></p>
-      <button onclick="iniciarCorrida()">Iniciar</button>
-      <button onclick="pararCorrida()">Parar</button>
-      <button onclick="zerarCorrida()">Zerar</button>
-      <button onclick="percorrerTrajeto()">Ver Percurso</button>
-      <div id="mapa"></div>
-    </div>
+<div id="tela-principal" class="container">
+  <div class="cabecalho">
+    <img src="https://github.com/user-attachments/assets/cd11e96a-1183-4fc0-af62-6f989d6f0893" alt="Logo">
   </div>
 
-  <div id="exercise-modal" class="exercise-container">
-    <h2 id="modal-title"></h2>
-    <ul class="exercise-list" id="exercise-list"></ul>
-    <input type="text" id="exercise-input" class="input-field" placeholder="Novo exercício">
-    <button class="add-btn" onclick="addExercise()">Adicionar</button>
-    <button class="return-btn" onclick="closeModal()">Retornar</button>
+  <div class="spotify-section">
+    <h3>Playlist no Spotify</h3>
+    <iframe src="https://open.spotify.com/embed/playlist/37i9dQZF1DX76Wlfdnj7AP?utm_source=generator" frameborder="0" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
   </div>
 
-  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-  <script>
-    const days = ['Treino A', 'Treino B', 'Treino C', 'Treino D', 'Running'];
-    const daysContainer = document.getElementById('days-container');
-    let currentDay = '';
-    let exercises = JSON.parse(localStorage.getItem('exercises')) || {};
+  <div class="input-field">
+    <input type="text" id="nome" placeholder="Nome do Aluno">
+    <span class="trash-icon" onclick="apagarNome()">🗑️</span>
+  </div>
 
-    let watchId;
-    let startTime;
-    let totalDistance = 0;
-    let lastCoords = null;
-    let coordenadasPercurso = [];
-    let mapa, polyline;
+  <div id="days-container"></div>
+  <button class="pdf-btn" onclick="gerarPdf()">Gerar PDF</button>
+</div>
 
-    document.addEventListener('DOMContentLoaded', () => {
-      const savedName = localStorage.getItem('nomeAluno');
-      if (savedName) document.getElementById('nome').value = savedName;
+<div id="exercise-modal" class="exercise-container">
+  <h2 id="modal-title"></h2>
+  <ul class="exercise-list" id="exercise-list"></ul>
+  <div class="input-field"><input type="text" id="exercise-input" placeholder="Exercício"></div>
+  <div class="input-field"><input type="text" id="series-input" placeholder="Séries"></div>
+  <div class="input-field"><input type="text" id="reps-input" placeholder="Repetições"></div>
+  <button class="add-btn" onclick="addExercise()">Adicionar</button>
+  <button class="return-btn" onclick="closeModal()">Retornar</button>
+</div>
 
-      days.forEach(day => {
-        const button = document.createElement('button');
-        button.className = 'day-button';
-        button.textContent = `${day} +`;
-        button.onclick = () => openModal(day);
-        daysContainer.appendChild(button);
+<script>
+  const days = ['Treino A', 'Treino B', 'Treino C', 'Treino D', 'Running'];
+  const daysContainer = document.getElementById('days-container');
+  let currentDay = '';
+  let exercises = JSON.parse(localStorage.getItem('exercises')) || {};
+
+  document.addEventListener('DOMContentLoaded', () => {
+    const savedName = localStorage.getItem('nomeAluno');
+    if (savedName) document.getElementById('nome').value = savedName;
+
+    days.forEach(day => {
+      const button = document.createElement('button');
+      button.className = 'day-button';
+      button.textContent = `${day} +`;
+      button.onclick = () => openModal(day);
+      daysContainer.appendChild(button);
+    });
+  });
+
+  function openModal(day) {
+    currentDay = day;
+    document.getElementById('tela-principal').style.display = 'none';
+    document.getElementById('exercise-modal').style.display = 'block';
+    document.getElementById('modal-title').innerText = `Exercícios de ${day}`;
+    loadExercises();
+  }
+
+  function closeModal() {
+    document.getElementById('exercise-modal').style.display = 'none';
+    document.getElementById('tela-principal').style.display = 'flex';
+  }
+
+  function apagarNome() {
+    document.getElementById('nome').value = '';
+    localStorage.removeItem('nomeAluno');
+  }
+
+  function loadExercises() {
+    const list = document.getElementById('exercise-list');
+    list.innerHTML = '';
+
+    const items = exercises[currentDay] || [];
+    items.forEach((item, index) => {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <strong>${item.nome}</strong>
+        Séries: ${item.series} | Repetições: ${item.reps}
+        <button class="remove-btn" onclick="removeExercise(${index})">Remover</button>`;
+      list.appendChild(li);
+    });
+  }
+
+  function addExercise() {
+    const nome = document.getElementById('exercise-input').value.trim();
+    const series = document.getElementById('series-input').value.trim();
+    const reps = document.getElementById('reps-input').value.trim();
+
+    if (!nome || !series || !reps) return;
+
+    if (!exercises[currentDay]) exercises[currentDay] = [];
+    exercises[currentDay].push({ nome, series, reps });
+    localStorage.setItem('exercises', JSON.stringify(exercises));
+
+    document.getElementById('exercise-input').value = '';
+    document.getElementById('series-input').value = '';
+    document.getElementById('reps-input').value = '';
+    loadExercises();
+  }
+
+  function removeExercise(index) {
+    exercises[currentDay].splice(index, 1);
+    localStorage.setItem('exercises', JSON.stringify(exercises));
+    loadExercises();
+  }
+
+  async function gerarPdf() {
+    const { jsPDF } = window.jspdf;
+    const doc = new jsPDF();
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(16);
+    doc.text("Relatório de Treinos", 105, 20, { align: "center" });
+
+    const savedExercises = JSON.parse(localStorage.getItem('exercises')) || {};
+    let y = 30;
+
+    Object.keys(savedExercises).forEach(treino => {
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(13);
+      doc.text(`Treino ${treino}`, 15, y);
+      y += 8;
+
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(11);
+
+      savedExercises[treino].forEach(ex => {
+        doc.text(`- ${ex.nome} | Séries: ${ex.series} | Reps: ${ex.reps}`, 20, y);
+        y += 7;
+        if (y > 280) {
+          doc.addPage();
+          y = 20;
+        }
       });
+
+      y += 10;
     });
 
-    function openModal(day) {
-      currentDay = day;
-
-      if (day === 'Running') {
-        document.getElementById('exercise-modal').style.display = 'none';
-        document.getElementById('monitor-corrida').style.display = 'block';
-        return;
-      }
-
-      document.getElementById('monitor-corrida').style.display = 'none';
-      document.getElementById('modal-title').innerText = `Exercícios de ${day}`;
-      document.getElementById('exercise-modal').style.display = 'block';
-      loadExercises();
-    }
-
-    function iniciarCorrida() {
-      if (!navigator.geolocation) {
-        alert("Geolocalização não suportada.");
-        return;
-      }
-
-      startTime = Date.now();
-      totalDistance = 0;
-      lastCoords = null;
-      coordenadasPercurso = [];
-
-      document.getElementById('tempo').textContent = '0s';
-      document.getElementById('distancia').textContent = '0.00 km';
-      document.getElementById('velocidade').textContent = '0.00 km/h';
-      document.getElementById('pace').textContent = '0.00 min/km';
-
-      watchId = navigator.geolocation.watchPosition(
-        (position) => {
-          const { latitude, longitude } = position.coords;
-          const currentTime = Date.now();
-          const elapsedTime = (currentTime - startTime) / 1000;
-
-          if (lastCoords) {
-            const distance = calcularDistancia(lastCoords.latitude, lastCoords.longitude, latitude, longitude);
-            totalDistance += distance;
-          }
-
-          lastCoords = { latitude, longitude };
-          coordenadasPercurso.push([latitude, longitude]);
-
-          const tempoMin = elapsedTime / 60;
-          const velocidade = totalDistance / (elapsedTime / 3600);
-          const pace = tempoMin / totalDistance;
-
-          document.getElementById('tempo').textContent = `${Math.floor(elapsedTime)}s`;
-          document.getElementById('distancia').textContent = `${totalDistance.toFixed(2)} km`;
-          document.getElementById('velocidade').textContent = `${velocidade.toFixed(2)} km/h`;
-          document.getElementById('pace').textContent = isFinite(pace) ? `${pace.toFixed(2)} min/km` : '0.00 min/km';
-        },
-        (error) => {
-          console.error("Erro:", error);
-          alert("Erro na localização. Verifique as permissões.");
-        },
-        {
-          enableHighAccuracy: true,
-          maximumAge: 1000,
-          timeout: 5000
-        }
-      );
-    }
-
-    function pararCorrida() {
-      if (watchId) {
-        navigator.geolocation.clearWatch(watchId);
-        watchId = null;
-      }
-    }
-
-    function zerarCorrida() {
-      pararCorrida();
-      totalDistance = 0;
-      lastCoords = null;
-      coordenadasPercurso = [];
-
-      document.getElementById('tempo').textContent = '0s';
-      document.getElementById('distancia').textContent = '0.00 km';
-      document.getElementById('velocidade').textContent = '0.00 km/h';
-      document.getElementById('pace').textContent = '0.00 min/km';
-
-      document.getElementById('mapa').style.display = 'none';
-      if (mapa) {
-        mapa.remove();
-        mapa = null;
-      }
-    }
-
-    function percorrerTrajeto() {
-      if (coordenadasPercurso.length === 0) {
-        alert("Nenhum trajeto registrado.");
-        return;
-      }
-
-      document.getElementById('mapa').style.display = 'block';
-
-      if (mapa) {
-        mapa.remove();
-      }
-
-      mapa = L.map('mapa').setView(coordenadasPercurso[0], 16);
-
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; OpenStreetMap'
-      }).addTo(mapa);
-
-      polyline = L.polyline(coordenadasPercurso, { color: 'orange' }).addTo(mapa);
-      mapa.fitBounds(polyline.getBounds());
-    }
-
-    function calcularDistancia(lat1, lon1, lat2, lon2) {
-      const R = 6371;
-      const dLat = (lat2 - lat1) * Math.PI / 180;
-      const dLon = (lon2 - lon1) * Math.PI / 180;
-      const a =
-        Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-        Math.sin(dLon / 2) * Math.sin(dLon / 2);
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-      return R * c;
-    }
-  </script>
+    doc.save("meus-treinos.pdf");
+  }
+</script>
 </body>
 </html>
