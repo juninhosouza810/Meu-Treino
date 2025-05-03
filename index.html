@@ -22,35 +22,44 @@
       max-width: 480px;
       margin: 30px auto;
       padding: 25px;
-      background: rgba(0, 0, 0, 0.8);
+      background: rgba(0, 0, 0, 0.85);
       border-radius: 15px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
     }
 
     .cabecalho img {
       display: block;
-      height: 110px;
-      margin: 0 auto 20px;
+      height: 100px;
+      margin: 0 auto;
     }
 
     h3 {
       color: #fcb045;
-      margin-bottom: 8px;
+      margin: 0;
     }
 
     iframe {
       width: 100%;
-      border-radius: 8px;
-      margin-bottom: 20px;
+      border-radius: 10px;
+      min-height: 80px;
+    }
+
+    .spotify-section {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .input-field {
       display: flex;
       align-items: center;
       background: #333;
-      padding: 10px;
+      padding: 12px;
       border-radius: 10px;
-      margin-bottom: 20px;
+      gap: 10px;
     }
 
     .input-field input {
@@ -63,10 +72,15 @@
     }
 
     .trash-icon {
-      margin-left: 10px;
       color: #f44336;
       cursor: pointer;
-      font-size: 1.2rem;
+      font-size: 1.3rem;
+    }
+
+    #days-container {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
     }
 
     .day-button {
@@ -74,7 +88,6 @@
       background: linear-gradient(90deg, #f7971e, #ffd200);
       border: none;
       padding: 12px;
-      margin: 8px 0;
       border-radius: 10px;
       font-weight: bold;
       font-size: 1.1rem;
@@ -95,7 +108,28 @@
       border-radius: 10px;
       font-weight: bold;
       width: 100%;
-      margin-top: 15px;
+      cursor: pointer;
+    }
+
+    #monitor-corrida {
+      display: none;
+      background: #333;
+      padding: 20px;
+      border-radius: 12px;
+    }
+
+    #monitor-corrida p {
+      margin: 8px 0;
+    }
+
+    #monitor-corrida button {
+      margin-right: 10px;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 8px;
+      background: #fcb045;
+      font-weight: bold;
+      color: #000;
       cursor: pointer;
     }
 
@@ -182,7 +216,18 @@
     </div>
 
     <div id="days-container"></div>
+
     <button class="pdf-btn" onclick="gerarPdf()">Gerar PDF</button>
+
+    <div id="monitor-corrida">
+      <h3>Monitoramento de Corrida</h3>
+      <p><strong>Tempo:</strong> <span id="tempo">0s</span></p>
+      <p><strong>Distância:</strong> <span id="distancia">0.00 km</span></p>
+      <p><strong>Velocidade:</strong> <span id="velocidade">0.00 km/h</span></p>
+      <p><strong>Pace:</strong> <span id="pace">0.00 min/km</span></p>
+      <button onclick="iniciarCorrida()">Iniciar</button>
+      <button onclick="pararCorrida()">Parar</button>
+    </div>
   </div>
 
   <div id="exercise-modal" class="exercise-container">
@@ -195,7 +240,7 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <script>
-    const days = ['Treino A', 'Treino B', 'Treino C', 'Treino D', 'Cárdio'];
+    const days = ['Treino A', 'Treino B', 'Treino C', 'Treino D', 'Running'];
     const daysContainer = document.getElementById('days-container');
     let currentDay = '';
     let exercises = JSON.parse(localStorage.getItem('exercises')) || {};
@@ -213,93 +258,19 @@
       });
     });
 
-    function apagarNome() {
-      if (confirm("Deseja realmente apagar o nome do aluno?")) {
-        localStorage.removeItem('nomeAluno');
-        document.getElementById('nome').value = '';
-      }
-    }
-
-    document.getElementById('nome').addEventListener('input', function () {
-      const nome = this.value.trim();
-      if (nome) {
-        localStorage.setItem('nomeAluno', nome);
-      }
-    });
-
     function openModal(day) {
       currentDay = day;
+
+      if (day === 'Running') {
+        document.getElementById('exercise-modal').style.display = 'none';
+        document.getElementById('monitor-corrida').style.display = 'block';
+        return;
+      }
+
+      document.getElementById('monitor-corrida').style.display = 'none';
       document.getElementById('modal-title').innerText = `Exercícios de ${day}`;
       document.getElementById('exercise-modal').style.display = 'block';
       loadExercises();
-    }
-
-    function closeModal() {
-      document.getElementById('exercise-modal').style.display = 'none';
-    }
-
-    function addExercise() {
-      const input = document.getElementById('exercise-input');
-      const value = input.value.trim();
-      if (value !== '') {
-        if (!exercises[currentDay]) exercises[currentDay] = [];
-        exercises[currentDay].push(value);
-        localStorage.setItem('exercises', JSON.stringify(exercises));
-        input.value = '';
-        loadExercises();
-      }
-    }
-
-    function loadExercises() {
-      const list = document.getElementById('exercise-list');
-      list.innerHTML = '';
-      if (exercises[currentDay]) {
-        exercises[currentDay].forEach((exercise, index) => {
-          const li = document.createElement('li');
-          li.innerHTML = `${exercise} <button class="remove-btn" onclick="removeExercise(${index})">X</button>`;
-          list.appendChild(li);
-        });
-      }
-    }
-
-    function removeExercise(index) {
-      if (confirm("Deseja realmente remover este exercício?")) {
-        exercises[currentDay].splice(index, 1);
-        localStorage.setItem('exercises', JSON.stringify(exercises));
-        loadExercises();
-      }
-    }
-
-    function gerarPdf() {
-      const { jsPDF } = window.jspdf;
-      const doc = new jsPDF();
-
-      let yPosition = 20;
-      doc.setFontSize(16);
-      doc.text('Treino do Aluno', 105, yPosition, { align: 'center' });
-
-      const nome = document.getElementById('nome').value.trim();
-      if (nome) {
-        yPosition += 10;
-        doc.setFontSize(12);
-        doc.text(`Nome: ${nome}`, 20, yPosition);
-      }
-
-      for (const [day, exercisesList] of Object.entries(exercises)) {
-        if (exercisesList.length > 0) {
-          yPosition += 10;
-          doc.setFontSize(14);
-          doc.text(`${day}:`, 20, yPosition);
-
-          exercisesList.forEach(exercise => {
-            yPosition += 8;
-            doc.setFontSize(12);
-            doc.text(`- ${exercise}`, 30, yPosition);
-          });
-        }
-      }
-
-      doc.save('treino.pdf');
     }
   </script>
 </body>
